@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ecommerce_apps/ColorTheme.dart';
 import 'package:ecommerce_apps/widgets/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,6 +17,7 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
+  dynamic user;
   Future<List<dynamic>> readJsonProducts() async {
     Uri url = Uri.parse(
         "http://192.168.100.100/e-commerce-flutter-app/Products.php?getAllProductsByCategory=1&category=${this.widget.category}");
@@ -51,88 +53,116 @@ class _CategoryListState extends State<CategoryList> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-        ),
-        title: Text(this.widget.category),
-        foregroundColor: Colors.white,
-        elevation: 5,
-        actions: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              TextButton.icon(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.favorite,
-                  color: Colors.white,
+    return FutureBuilder(
+        future: Home().createState().getUserFromSession(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return SpinKitCircle(
+              color: Colors.white,
+              size: 50,
+            );
+          } else {
+            user = snapshot.data;
+            return Scaffold(
+              appBar: AppBar(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
                 ),
-                label: Text(""),
-              ),
-              TextButton.icon(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.local_grocery_store,
-                  color: Colors.white,
-                ),
-                label: Text(""),
-              ),
-              CircleAvatar(
-                backgroundColor: Colors.white,
-              ),
-              SizedBox(
-                width: 15,
-              ),
-            ],
-          )
-        ],
-      ),
-      body: Container(
-        margin: EdgeInsets.only(left: 15, right: 15),
-        child: Column(
-          children: [
-            Expanded(
-              child: FutureBuilder(
-                future: readJsonProducts(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return loading();
-                  } else {
-                    List<dynamic> products = snapshot.data as List<dynamic>;
-                    print(products.length);
-                    return GridView.builder(
-                      itemCount: products.length,
-                      physics: BouncingScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 4 / 5,
+                title: Text(this.widget.category),
+                foregroundColor: Colors.white,
+                elevation: 5,
+                actions: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.favorite,
+                          color: Colors.white,
+                        ),
+                        label: Text(""),
                       ),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          child: CardsProduct(
-                            id: index,
-                            title: products[index]["name_product"],
-                            price: int.parse(products[index]["price"]),
-                            urlImage: products[index]["product_image"],
-                          ),
-                        );
-                      },
-                    );
-                  }
-                },
+                      TextButton.icon(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.local_grocery_store,
+                          color: Colors.white,
+                        ),
+                        label: Text(""),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, "/userProfile");
+                        },
+                        child: CircleAvatar(
+                          radius: 15,
+                          backgroundImage:
+                              AssetImage("assets/images/${user.imageProfile}"),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                    ],
+                  )
+                ],
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+              body: Container(
+                margin: EdgeInsets.only(left: 15, right: 15),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: FutureBuilder(
+                        future: readJsonProducts(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return loading();
+                          } else {
+                            List<dynamic> products =
+                                snapshot.data as List<dynamic>;
+                            print(products.length);
+                            return GridView.builder(
+                              itemCount: products.length,
+                              physics: BouncingScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: 4 / 5,
+                              ),
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  child: CardsProduct(
+                                    id: index,
+                                    title: products[index]["name_product"],
+                                    price: int.parse(products[index]["price"]),
+                                    urlImage: products[index]["product_image"],
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        });
   }
 }

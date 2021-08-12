@@ -31,7 +31,6 @@ class _HomeState extends State<Home> {
       return data;
     }
     var json = jsonDecode(data as String);
-    print(json);
     dynamic user = User.fromJson(json: json);
     return user;
   }
@@ -128,9 +127,15 @@ class _HomeState extends State<Home> {
                               onTap: () =>
                                   Navigator.pushNamed(context, "/login"),
                             )
-                          : CircleAvatar(
-                              radius: 15,
-                              backgroundImage: NetworkImage(user.imageProfile),
+                          : GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, "/userProfile");
+                              },
+                              child: CircleAvatar(
+                                radius: 15,
+                                backgroundImage: AssetImage(
+                                    "assets/images/${user.imageProfile}"),
+                              ),
                             ),
                     ),
                     SizedBox(

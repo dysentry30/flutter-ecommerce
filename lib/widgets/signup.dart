@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:ecommerce_apps/ColorTheme.dart';
+import 'package:ecommerce_apps/classes/User.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -25,6 +27,8 @@ class _SignUpState extends State<SignUp> {
   FocusNode _emailFocusNode = FocusNode();
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
+
+  late SharedPreferences session;
 
   final _formKey = GlobalKey<FormState>();
   late bool isEmailExist;
@@ -61,6 +65,8 @@ class _SignUpState extends State<SignUp> {
     isEmailExist = false;
     isWaiting = false;
     isUsernameExist = false;
+
+    // session = SharedPreferences.getInstance();
   }
 
   @override
@@ -169,40 +175,34 @@ class _SignUpState extends State<SignUp> {
                                 .hasMatch(value!)) {
                               return "Pastikan yang anda masukan adalah email";
                             }
-                            // if (value!.isEmpty) {
-                            //   return "Field ini tidak boleh kosong";
-                            // }
                           },
                           controller: _emailController,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           onEditingComplete: () async {
-                            print(_formKey.currentState!.validate());
-                            if (_formKey.currentState!.validate()) {
-                              isValidateEmail = true;
-                              setState(() {});
+                            isValidateEmail = true;
+                            setState(() {});
 
-                              isEmailExist =
-                                  await checkEmail(_emailController.text);
-
-                              if (!isEmailExist) {
-                                setFocus(_emailFocusNode, _usernameFocusNode);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text("Email tersedia"),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text("Email sudah terpakai"),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              }
-                              isValidateEmail = false;
-                              setState(() {});
+                            isEmailExist =
+                                await checkEmail(_emailController.text);
+                            print(isEmailExist);
+                            if (!isEmailExist) {
+                              setFocus(_emailFocusNode, _usernameFocusNode);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Email tersedia"),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Email sudah terpakai"),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
                             }
+                            isValidateEmail = false;
+                            setState(() {});
                           },
                           focusNode: _emailFocusNode,
                           autofocus: true,
@@ -439,35 +439,38 @@ class _SignUpState extends State<SignUp> {
                                   "http://localhost/e-commerce-flutter-app/User.php?signUp=1&newUser=$newUser");
                               var response = await http.get(url);
                               if (response.statusCode == 200) {
-                                // dynamic result = jsonDecode(response.body)
-                                //     as Map<String, dynamic>;
-                                // print(result["username"]);
-                                //   if (response.body != "false") {
-                                //     // Map<String, dynamic> data =
-                                //     //     jsonDecode(response.body)
-                                //     //         as Map<String, dynamic>;
-                                //     // User user = User.fromJson(
-                                //     //   json: data,
-                                //     // );
-                                //     // session =
-                                //     //     await SharedPreferences.getInstance();
-                                //     // await session!
-                                //     //     .setString("user", user.toString());
-                                //     Navigator.pushReplacementNamed(context, "/");
-                                //   } else {
-                                //     final snackBar = SnackBar(
-                                //       content: Text(
-                                //           "Username atau Password anda salah, silahkan coba lagi."),
-                                //       duration: Duration(seconds: 2),
-                                //     );
-                                //     isWaiting = false;
-                                //     setState(() {
-                                //       ScaffoldMessenger.of(context)
-                                //           .showSnackBar(snackBar);
-                                //     });
-                                //   }
-                                //   isWaiting = false;
-                                //   setState(() {});
+                                if (response.body != "false") {
+                                  // Map<String, dynamic> data =
+                                  //     jsonDecode(response.body)
+                                  //         as Map<String, dynamic>;
+                                  // User user = User.fromJson(
+                                  //   json: data,
+                                  // );
+                                  // session =
+                                  //     await SharedPreferences.getInstance();
+                                  // await session.setString(
+                                  //     "user", user.toString());
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("Berhasil didaftarkan"),
+                                    ),
+                                  );
+                                  Navigator.pushReplacementNamed(context, "/");
+                                } else {
+                                  final snackBar = SnackBar(
+                                    content: Text(
+                                      "Gagal didaftarkan, silahkan coba lagi.",
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  );
+                                  isWaiting = false;
+                                  setState(() {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  });
+                                }
+                                isWaiting = false;
+                                setState(() {});
                               }
                             },
                             icon:

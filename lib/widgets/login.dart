@@ -17,12 +17,6 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   SharedPreferences? session;
-  // String? name;
-  // Future<String> getSession() async {
-  //   session = await SharedPreferences.getInstance();
-  //   await session!.setString("user", "Joko");
-  //   return session!.getString("user") ?? "kosong";
-  // }
 
   String? username;
   String? password;
@@ -114,7 +108,7 @@ class _LoginState extends State<Login> {
                           hintStyle:
                               TextStyle(color: Colors.grey, fontSize: 12),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -161,7 +155,7 @@ class _LoginState extends State<Login> {
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -184,7 +178,6 @@ class _LoginState extends State<Login> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
-                        // color: Colors.red,
                         child: TextButton.icon(
                           onPressed: () async {
                             isWaiting = true;
