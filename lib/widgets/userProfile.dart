@@ -182,36 +182,29 @@ class _UserProfileState extends State<UserProfile> {
                                     Column(
                                       children: [
                                         SizedBox(height: 15),
-                                        InkWell(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          onTap: () =>
-                                              print("Transaksi Berlangsung"),
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 10, horizontal: 15),
-                                            child: Column(
-                                              children: [
-                                                Icon(
-                                                  FontAwesome.money,
-                                                  color: ColorTheme.thirdColor,
-                                                  size: 40,
-                                                ),
-                                                SizedBox(height: 12),
-                                                Container(
-                                                  width: 200,
-                                                  child: Text(
-                                                    "Rp. 100.000.000.000",
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 15),
+                                          child: Column(
+                                            children: [
+                                              Icon(
+                                                FontAwesome.money,
+                                                color: ColorTheme.thirdColor,
+                                                size: 40,
+                                              ),
+                                              SizedBox(height: 12),
+                                              Container(
+                                                width: 200,
+                                                child: Text(
+                                                  "Rp. 100.000.000.000",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
