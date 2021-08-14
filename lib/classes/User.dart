@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:ecommerce_apps/classes/Product.dart';
+import 'package:http/http.dart' as http;
+
 class User {
   late String fullName, password, email, imageProfile;
   late int idUser, balance;
@@ -17,8 +20,10 @@ class User {
       fullName: json["full_name"],
       password: json["password"],
       email: json["email"],
-      idUser: json["id_user"] is int ? json["id_user"] : int.parse(json["id_user"]),
-      balance: json["balance"] is int ? json["balance"] : int.parse(json["balance"]),
+      idUser:
+          json["id_user"] is int ? json["id_user"] : int.parse(json["id_user"]),
+      balance:
+          json["balance"] is int ? json["balance"] : int.parse(json["balance"]),
       imageProfile: json["user_image"],
     );
   }
@@ -33,5 +38,9 @@ class User {
       "user_image": this.imageProfile,
     });
     return jsonEncoder;
+  }
+
+  Future<void> addProductToWhislist({required Product product}) async {
+    // var result = await http.get("");
   }
 }

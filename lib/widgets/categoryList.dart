@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ecommerce_apps/ColorTheme.dart';
+import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:ecommerce_apps/widgets/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -132,7 +133,6 @@ class _CategoryListState extends State<CategoryList> {
                           } else {
                             List<dynamic> products =
                                 snapshot.data as List<dynamic>;
-                            print(products.length);
                             return GridView.builder(
                               itemCount: products.length,
                               physics: BouncingScrollPhysics(),
@@ -144,12 +144,11 @@ class _CategoryListState extends State<CategoryList> {
                                 childAspectRatio: 4 / 5,
                               ),
                               itemBuilder: (context, index) {
+                                Product product =
+                                    Product.fromJson(json: products[index]);
                                 return Container(
                                   child: CardsProduct(
-                                    id: index,
-                                    title: products[index]["name_product"],
-                                    price: int.parse(products[index]["price"]),
-                                    urlImage: products[index]["product_image"],
+                                    product: product,
                                   ),
                                 );
                               },

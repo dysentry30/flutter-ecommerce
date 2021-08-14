@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:ecommerce_apps/classes/User.dart';
 import 'package:ecommerce_apps/widgets/categoryList.dart';
 import 'package:flutter/foundation.dart';
@@ -336,11 +337,9 @@ class _ProductCardState extends State<ProductCard>
                     ),
                     itemCount: products.length,
                     itemBuilder: (context, index) {
+                      Product product = Product.fromJson(json: products[index]);
                       return CardsProduct(
-                        id: index,
-                        title: products[index]["name_product"],
-                        price: int.parse(products[index]["price"]),
-                        urlImage: products[index]["product_image"],
+                        product: product,
                       );
                     },
                   ),
@@ -387,28 +386,27 @@ class _ProductCardState extends State<ProductCard>
   }
 }
 
+@immutable
 class CardsProduct extends StatefulWidget {
-  String urlImage;
-  String title;
-  int price;
-  int id;
+  Product product;
   bool isLike = false;
   CardsProduct({
     Key? key,
-    required this.urlImage,
-    required this.title,
-    required this.price,
-    required this.id,
+    required this.product,
   }) : super(key: key);
   @override
-  _CardsProductState createState() => _CardsProductState();
+  _CardsProductState createState() => _CardsProductState(product: product);
 }
 
 class _CardsProductState extends State<CardsProduct> {
+  Product product;
+  _CardsProductState({
+    required this.product,
+  });
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () => print(widget.title),
+      onPressed: () => print(product.nameProduct),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -422,7 +420,7 @@ class _CardsProductState extends State<CardsProduct> {
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image(
-                    image: NetworkImage(widget.urlImage),
+                    image: NetworkImage(product.productImage),
                     height: 126,
                     width: constraint.maxWidth,
                     fit: BoxFit.fitWidth,
@@ -443,7 +441,7 @@ class _CardsProductState extends State<CardsProduct> {
                         width: 80,
                         margin: EdgeInsets.only(bottom: 5),
                         child: Text(
-                          widget.title,
+                          product.nameProduct,
                           style: TextStyle(
                               fontSize: 11,
                               color: Colors.black,
@@ -455,9 +453,9 @@ class _CardsProductState extends State<CardsProduct> {
                         height: 20,
                         child: GestureDetector(
                           onTap: () async {
-                            var user =
+                            var isUserSessionActive =
                                 await Home().createState().getUserFromSession();
-                            if (user == null) {
+                            if (isUserSessionActive == null) {
                               var snackBar = SnackBar(
                                 content: Text(
                                     "Login terlebih dahulu sebelum melakukan whislist produk"),
@@ -467,14 +465,16 @@ class _CardsProductState extends State<CardsProduct> {
                                   .showSnackBar(snackBar);
                               return;
                             }
+                            User user = isUserSessionActive as User;
                             widget.isLike = !widget.isLike;
                             if (widget.isLike) {
+                              user.addProductToWhislist(product: product);
                               final snackBar = SnackBar(
                                 duration: Duration(milliseconds: 1500),
                                 content: Row(
                                   children: [
                                     Text(
-                                      "${widget.title}",
+                                      "${product.nameProduct}",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -484,8 +484,27 @@ class _CardsProductState extends State<CardsProduct> {
                               );
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
+                              // return;
+                            } else if (widget.isLike == false) {
+                              final snackBar = SnackBar(
+                                duration: Duration(milliseconds: 1500),
+                                content: Row(
+                                  children: [
+                                    Text(
+                                      "${product.nameProduct}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(" sudah dihapus dari whislist"),
+                                  ],
+                                ),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              // return;
                             }
                             setState(() {});
+                            return;
                           },
                           child: Icon(
                             FontAwesome5.heart,
@@ -500,7 +519,7 @@ class _CardsProductState extends State<CardsProduct> {
                   Text(
                     NumberFormat.currency(
                             locale: "id", decimalDigits: 0, symbol: "Rp ")
-                        .format(this.widget.price),
+                        .format(product.price),
                     style: TextStyle(
                         fontSize: 10,
                         color: Colors.blueGrey,

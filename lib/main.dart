@@ -1,6 +1,7 @@
 import 'package:ecommerce_apps/widgets/login.dart';
 import 'package:ecommerce_apps/widgets/signup.dart';
 import 'package:ecommerce_apps/widgets/userProfile.dart';
+import 'package:ecommerce_apps/widgets/whislist.dart';
 import 'package:flutter/material.dart';
 import 'widgets/home.dart';
 
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
         "/login": (context) => Login(),
         "/signup": (context) => SignUp(),
         "/userProfile": (context) => UserProfile(),
+        "/wishlist": (context) => Whislist(),
         // "/category-list": (context) => CategoryList(),
       },
     );
