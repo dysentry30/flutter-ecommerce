@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
   late String fullName, password, email, imageProfile;
@@ -40,7 +41,19 @@ class User {
     return jsonEncoder;
   }
 
-  Future<void> addProductToWhislist({required Product product}) async {
-    // var result = await http.get("");
+  // Future<bool> addProductToWishlist({required Product product}) async {
+  //   Uri url = Uri.parse(
+  //       "http://localhost/e-commerce-flutter-app/User.php?addProductToWishlist=1&product=${product.toString()}&id-user=${this.idUser}");
+  //   var result = await http.get(url);
+  //   if (result.body == "true") {
+  //     return true;
+  //   }
+  //   return false;
+  // }
+
+  Future<bool> logout() async {
+    var session = await SharedPreferences.getInstance();
+    var isLogout = await session.remove("user");
+    return isLogout;
   }
 }

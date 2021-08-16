@@ -266,8 +266,9 @@ class _UserProfileState extends State<UserProfile> {
                                                 SizedBox(height: 15),
                                                 Container(
                                                   padding: EdgeInsets.symmetric(
-                                                      vertical: 10,
-                                                      horizontal: 15),
+                                                    vertical: 10,
+                                                    horizontal: 15,
+                                                  ),
                                                   child: Column(
                                                     children: [
                                                       Icon(
@@ -310,6 +311,37 @@ class _UserProfileState extends State<UserProfile> {
                                 ),
                               ),
                             ),
+                            Container(
+                              width: constraints.maxWidth - 10,
+                              height: 100,
+                              child: Row(
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      var isLogout = await user.logout();
+                                      if (isLogout) {
+                                        Navigator.pushNamedAndRemoveUntil(
+                                            context, "/", (route) => false);
+                                      }
+                                      return;
+                                    },
+                                    icon: Icon(FontAwesome5.sign_out_alt),
+                                    label: Text("Logout"),
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              ColorTheme.fifthColor),
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.white),
+                                      fixedSize: MaterialStateProperty.all<
+                                              Size>(
+                                          Size(constraints.maxWidth - 10, 40)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         )
                       ],

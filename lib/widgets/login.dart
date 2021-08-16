@@ -40,8 +40,8 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    checkSession().then(
-        (value) => value ? Navigator.pushReplacementNamed(context, "/") : "");
+    checkSession()
+        .then((value) => value ? Navigator.popAndPushNamed(context, "/") : "");
   }
 
   void setFocus(FocusNode oldFocus, FocusNode nextFocus) {
@@ -216,7 +216,7 @@ class _LoginState extends State<Login> {
                                       await SharedPreferences.getInstance();
                                   await session!
                                       .setString("user", user.toString());
-                                  Navigator.pushReplacementNamed(context, "/");
+                                  Navigator.popAndPushNamed(context, "/");
                                 } else {
                                   final snackBar = SnackBar(
                                     content: Text(
@@ -302,7 +302,7 @@ class _LoginState extends State<Login> {
                       Container(
                         child: TextButton.icon(
                           onPressed: () {
-                            Navigator.pushReplacementNamed(context, "/");
+                            Navigator.popAndPushNamed(context, "/");
                           },
                           icon: Icon(
                             Icons.arrow_back,

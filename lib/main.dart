@@ -1,7 +1,7 @@
 import 'package:ecommerce_apps/widgets/login.dart';
 import 'package:ecommerce_apps/widgets/signup.dart';
 import 'package:ecommerce_apps/widgets/userProfile.dart';
-import 'package:ecommerce_apps/widgets/whislist.dart';
+import 'package:ecommerce_apps/widgets/wishlist.dart';
 import 'package:flutter/material.dart';
 import 'widgets/home.dart';
 
@@ -19,14 +19,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: "/login",
+      initialRoute: "/",
       debugShowCheckedModeBanner: false,
       routes: {
         "/": (context) => Home(),
         "/login": (context) => Login(),
         "/signup": (context) => SignUp(),
         "/userProfile": (context) => UserProfile(),
-        "/wishlist": (context) => Whislist(),
+        "/wishlist": (context) => WishList(),
         // "/category-list": (context) => CategoryList(),
       },
     );

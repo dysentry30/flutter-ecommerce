@@ -455,7 +455,8 @@ class _SignUpState extends State<SignUp> {
                                       content: Text("Berhasil didaftarkan"),
                                     ),
                                   );
-                                  Navigator.pushReplacementNamed(context, "/");
+                                  Navigator.pushNamedAndRemoveUntil(
+                                      context, "/", (route) => false);
                                 } else {
                                   final snackBar = SnackBar(
                                     content: Text(

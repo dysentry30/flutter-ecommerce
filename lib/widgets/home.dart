@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:ecommerce_apps/classes/User.dart';
 import 'package:ecommerce_apps/widgets/categoryList.dart';
+import 'package:ecommerce_apps/widgets/wishlist.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_apps/ColorTheme.dart';
@@ -102,7 +104,9 @@ class _HomeState extends State<Home> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/wishlist");
+                      },
                       icon: Icon(
                         Icons.favorite,
                         color: Colors.white,
@@ -126,7 +130,7 @@ class _HomeState extends State<Home> {
                           ? GestureDetector(
                               child: Text("Login"),
                               onTap: () =>
-                                  Navigator.pushNamed(context, "/login"),
+                                  Navigator.popAndPushNamed(context, "/login"),
                             )
                           : GestureDetector(
                               onTap: () {
@@ -389,24 +393,34 @@ class _ProductCardState extends State<ProductCard>
 @immutable
 class CardsProduct extends StatefulWidget {
   Product product;
-  bool isLike = false;
   CardsProduct({
     Key? key,
     required this.product,
   }) : super(key: key);
   @override
-  _CardsProductState createState() => _CardsProductState(product: product);
+  _CardsProductState createState() => _CardsProductState(
+        product: product,
+      );
 }
 
 class _CardsProductState extends State<CardsProduct> {
   Product product;
+  late dynamic user;
+  bool isProductExistInWishlist = false;
   _CardsProductState({
     required this.product,
   });
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () => print(product.nameProduct),
+      onPressed: () => print(product.toString()),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -451,68 +465,153 @@ class _CardsProductState extends State<CardsProduct> {
                       SizedBox(
                         width: 20,
                         height: 20,
-                        child: GestureDetector(
-                          onTap: () async {
-                            var isUserSessionActive =
-                                await Home().createState().getUserFromSession();
-                            if (isUserSessionActive == null) {
-                              var snackBar = SnackBar(
-                                content: Text(
-                                    "Login terlebih dahulu sebelum melakukan whislist produk"),
-                              );
-                              Navigator.pushNamed(context, "/login");
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                              return;
-                            }
-                            User user = isUserSessionActive as User;
-                            widget.isLike = !widget.isLike;
-                            if (widget.isLike) {
-                              user.addProductToWhislist(product: product);
-                              final snackBar = SnackBar(
-                                duration: Duration(milliseconds: 1500),
-                                content: Row(
-                                  children: [
-                                    Text(
-                                      "${product.nameProduct}",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(" sudah dimasukan ke whislist"),
-                                  ],
-                                ),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                              // return;
-                            } else if (widget.isLike == false) {
-                              final snackBar = SnackBar(
-                                duration: Duration(milliseconds: 1500),
-                                content: Row(
-                                  children: [
-                                    Text(
-                                      "${product.nameProduct}",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(" sudah dihapus dari whislist"),
-                                  ],
-                                ),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                              // return;
-                            }
-                            setState(() {});
-                            return;
-                          },
-                          child: Icon(
-                            FontAwesome5.heart,
-                            color: widget.isLike
-                                ? ColorTheme.fourthColor
-                                : ColorTheme.secondaryColor,
-                          ),
-                        ),
+                        child: FutureBuilder(
+                            future: Home().createState().getUserFromSession(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return SpinKitCircle(
+                                  color: ColorTheme.secondaryColor,
+                                  size: 20,
+                                );
+                              } else {
+                                user = snapshot.data as User;
+                                return FutureBuilder(
+                                    future: product
+                                        .isProductWishlisted(user.idUser),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return SpinKitCircle(
+                                          color: Colors.black,
+                                          size: 20,
+                                        );
+                                      } else {
+                                        isProductExistInWishlist =
+                                            snapshot.data as bool;
+                                        return GestureDetector(
+                                          onTap: () async {
+                                            // var isUserSessionActive = await Home()
+                                            //     .createState()
+                                            //     .getUserFromSession();
+                                            if (user == false) {
+                                              var snackBar = SnackBar(
+                                                content: Text(
+                                                    "Login terlebih dahulu sebelum melakukan whislist produk"),
+                                              );
+                                              Navigator.popAndPushNamed(
+                                                  context, "/login");
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(snackBar);
+                                              return;
+                                            }
+                                            if (!isProductExistInWishlist) {
+                                              var isAddedToWishlist =
+                                                  await product
+                                                      .addProductToWishlist(
+                                                          user: user);
+                                              var snackBar;
+                                              if (isAddedToWishlist) {
+                                                snackBar = SnackBar(
+                                                  duration: Duration(
+                                                      milliseconds: 1500),
+                                                  content: Row(
+                                                    children: [
+                                                      Text(
+                                                        "${product.nameProduct}",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                          " sudah dimasukan ke whislist"),
+                                                    ],
+                                                  ),
+                                                );
+                                              } else {
+                                                snackBar = SnackBar(
+                                                  duration: Duration(
+                                                      milliseconds: 1500),
+                                                  content: Row(
+                                                    children: [
+                                                      Text(
+                                                        "${product.nameProduct}",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                          " gagal dimasukan ke whislist"),
+                                                    ],
+                                                  ),
+                                                );
+                                              }
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(snackBar);
+                                            } else {
+                                              var isRemoveFromWishlistSuccess =
+                                                  await product
+                                                      .removeProductFromWishlist(
+                                                          user: user);
+
+                                              final snackBar;
+                                              if (isRemoveFromWishlistSuccess) {
+                                                snackBar = SnackBar(
+                                                  duration: Duration(
+                                                      milliseconds: 1500),
+                                                  content: Row(
+                                                    children: [
+                                                      Text(
+                                                        "${product.nameProduct}",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                          " berhasil dihapus dari whislist"),
+                                                    ],
+                                                  ),
+                                                );
+                                              } else {
+                                                snackBar = SnackBar(
+                                                  duration: Duration(
+                                                      milliseconds: 1500),
+                                                  content: Row(
+                                                    children: [
+                                                      Text(
+                                                        "${product.nameProduct}",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                          " gagal dihapus dari whislist"),
+                                                    ],
+                                                  ),
+                                                );
+                                              }
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(snackBar);
+                                              // return;
+                                            }
+                                            setState(() {});
+                                            return;
+                                          },
+                                          child: Icon(
+                                            FontAwesome5.heart,
+                                            color: isProductExistInWishlist
+                                                ? ColorTheme.fourthColor
+                                                : ColorTheme.secondaryColor,
+                                          ),
+                                        );
+                                      }
+                                    });
+                              }
+                            }),
                       ),
                     ],
                   ),
