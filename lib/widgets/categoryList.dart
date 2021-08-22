@@ -19,9 +19,9 @@ class CategoryList extends StatefulWidget {
 
 class _CategoryListState extends State<CategoryList> {
   dynamic user;
-  Future<List<dynamic>> readJsonProducts() async {
+  Future<List<dynamic>> getAllProductsByCategory() async {
     Uri url = Uri.parse(
-        "http://192.168.100.100/e-commerce-flutter-app/Products.php?getAllProductsByCategory=1&category=${this.widget.category}");
+        "http://bagassatria-ecommerce.orgfree.com/Products.php?getAllProductsByCategory=1&category=${this.widget.category}");
     final response = await http.get(url);
     final dataProducts = jsonDecode(response.body) as List<dynamic>;
     return dataProducts;
@@ -120,39 +120,100 @@ class _CategoryListState extends State<CategoryList> {
                 ],
               ),
               body: Container(
+                width: double.infinity,
+                height: double.infinity,
                 margin: EdgeInsets.only(left: 15, right: 15),
                 child: Column(
                   children: [
                     Expanded(
                       child: FutureBuilder(
-                        future: readJsonProducts(),
+                        future: getAllProductsByCategory(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return loading();
                           } else {
-                            List<dynamic> products =
-                                snapshot.data as List<dynamic>;
-                            return GridView.builder(
-                              itemCount: products.length,
-                              physics: BouncingScrollPhysics(),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                childAspectRatio: 4 / 5,
-                              ),
-                              itemBuilder: (context, index) {
-                                Product product =
-                                    Product.fromJson(json: products[index]);
-                                return Container(
-                                  child: CardsProduct(
-                                    product: product,
+                            if (snapshot.data == null) {
+                              return Container(
+                                margin: EdgeInsets.only(top: 15),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 200,
+                                          child: Image(
+                                            image: AssetImage(
+                                                "assets/images/empty.jpg"),
+                                          ),
+                                        ),
+                                        SizedBox(height: 15),
+                                        Text("Maaf Produk tidak ditemukan"),
+                                        SizedBox(height: 15),
+                                        SizedBox(
+                                          width: 200,
+                                          child: TextButton.icon(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            icon: Icon(Icons.arrow_back),
+                                            label: Text("Kembali"),
+                                            style: ButtonStyle(
+                                              fixedSize: MaterialStateProperty
+                                                  .all<Size>(Size(
+                                                      double.infinity, 40)),
+                                              foregroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(Colors.white),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(
+                                                ColorTheme.fifthColor,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              List<dynamic> products =
+                                  snapshot.data as List<dynamic>;
+                              return WillPopScope(
+                                onWillPop: () =>
+                                    Navigator.pushNamedAndRemoveUntil(
+                                            context, "/", (route) => false)
+                                        .then((value) {
+                                  setState(() {});
+                                  return true;
+                                }),
+                                child: GridView.builder(
+                                  itemCount: products.length,
+                                  physics: BouncingScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                    childAspectRatio: 4 / 5,
                                   ),
-                                );
-                              },
-                            );
+                                  itemBuilder: (context, index) {
+                                    Product product =
+                                        Product.fromJson(json: products[index]);
+                                    return Container(
+                                      child: CardsProduct(
+                                        product: product,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            }
                           }
                         },
                       ),

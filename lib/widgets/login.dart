@@ -200,7 +200,7 @@ class _LoginState extends State<Login> {
                               String username = this.username!;
                               String password = this.password!;
                               Uri url = Uri.parse(
-                                  "http://192.168.100.100/e-commerce-flutter-app/User.php?login=1&username=${username}&password=${password}");
+                                  "http://bagassatria-ecommerce.orgfree.com/User.php?login=1&username=${username}&password=${password}");
                               // Uri url = Uri.parse(
                               //     "http://192.168.100.100/e-commerce-flutter-app/User.php?login=1&username=vupton&password=c0305c6fef6466e56e6d140d87da8a76");
                               var response = await http.get(url);

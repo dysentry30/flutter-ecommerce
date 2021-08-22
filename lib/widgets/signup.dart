@@ -436,7 +436,7 @@ class _SignUpState extends State<SignUp> {
                               // Uri url = Uri.parse(
                               //     "http://192.168.100.100/e-commerce-flutter-app/User.php?login=1&username=${username}&password=${password}");
                               Uri url = Uri.parse(
-                                  "http://localhost/e-commerce-flutter-app/User.php?signUp=1&newUser=$newUser");
+                                  "http://bagassatria-ecommerce.orgfree.com/User.php?signUp=1&newUser=$newUser");
                               var response = await http.get(url);
                               if (response.statusCode == 200) {
                                 if (response.body != "false") {

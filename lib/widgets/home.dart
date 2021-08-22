@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:ecommerce_apps/classes/User.dart';
+import 'package:ecommerce_apps/widgets/cartList.dart';
 import 'package:ecommerce_apps/widgets/categoryList.dart';
-import 'package:ecommerce_apps/widgets/wishlist.dart';
+import 'package:ecommerce_apps/widgets/productDetails.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_apps/ColorTheme.dart';
@@ -114,18 +114,19 @@ class _HomeState extends State<Home> {
                       label: Text(""),
                     ),
                     TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CartList(user: user)));
+                      },
                       icon: Icon(
                         Icons.local_grocery_store,
                         color: Colors.white,
                       ),
                       label: Text(""),
                     ),
-                    GestureDetector(
-                      onTap: () async {
-                        await session.remove("user");
-                        setState(() {});
-                      },
+                    Container(
                       child: this.user == null
                           ? GestureDetector(
                               child: Text("Login"),
@@ -276,7 +277,7 @@ class _ProductCardState extends State<ProductCard>
 
   Future<List<dynamic>> readJsonProducts() async {
     Uri url = Uri.parse(
-        "http://192.168.100.100/e-commerce-flutter-app/Products.php?getAllProductsByCategory=1&category=${this.widget.category}");
+        "http://bagassatria-ecommerce.orgfree.com/Products.php?getAllProductsByCategory=1&category=${this.widget.category}");
     final response = await http.get(url);
     final dataProducts = jsonDecode(response.body) as List<dynamic>;
     return dataProducts;
@@ -327,27 +328,36 @@ class _ProductCardState extends State<ProductCard>
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return loading();
               } else {
-                List<dynamic> products = snapshot.data as List<dynamic>;
-                return Container(
-                  height: heightCardProduct + 15,
-                  width: MediaQuery.of(context).size.width,
-                  child: GridView.builder(
-                    scrollDirection: Axis.horizontal,
-                    physics: BouncingScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 1,
-                      childAspectRatio: 8 / 7,
-                      mainAxisSpacing: 15,
+                if (snapshot.data == null) {
+                  return Container(
+                    child: Center(
+                      child: Text("Produk tidak ditemukan"),
                     ),
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      Product product = Product.fromJson(json: products[index]);
-                      return CardsProduct(
-                        product: product,
-                      );
-                    },
-                  ),
-                );
+                  );
+                } else {
+                  List<dynamic> products = snapshot.data as List<dynamic>;
+                  return Container(
+                    height: heightCardProduct + 15,
+                    width: MediaQuery.of(context).size.width,
+                    child: GridView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: BouncingScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1,
+                        childAspectRatio: 8 / 7,
+                        mainAxisSpacing: 15,
+                      ),
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        Product product =
+                            Product.fromJson(json: products[index]);
+                        return CardsProduct(
+                          product: product,
+                        );
+                      },
+                    ),
+                  );
+                }
               }
             },
           ),
@@ -420,7 +430,8 @@ class _CardsProductState extends State<CardsProduct> {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () => print(product.toString()),
+      onPressed: () => Navigator.push(context,
+          MaterialPageRoute(builder: (_) => ProductDetails(product: product))),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -491,9 +502,6 @@ class _CardsProductState extends State<CardsProduct> {
                                             snapshot.data as bool;
                                         return GestureDetector(
                                           onTap: () async {
-                                            // var isUserSessionActive = await Home()
-                                            //     .createState()
-                                            //     .getUserFromSession();
                                             if (user == false) {
                                               var snackBar = SnackBar(
                                                 content: Text(
