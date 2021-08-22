@@ -91,7 +91,7 @@ class Product {
     return false;
   }
 
-  Future<bool> removeProductToCart(
+  Future<bool> removeProductFromCart(
       {required User user, required int idCart}) async {
     Uri url = Uri.parse(
         "http://bagassatria-ecommerce.orgfree.com/Products.php?removeProductFromCart=1&id-user=${user.idUser}&id-cart=${idCart}");

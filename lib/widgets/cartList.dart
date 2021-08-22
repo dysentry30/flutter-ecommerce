@@ -35,8 +35,24 @@ class _CartListState extends State<CartList> {
     if (response.statusCode == 200) {
       products = jsonDecode(response.body) as List<dynamic>;
     }
+    _streamController.add(products);
     return products;
   }
+
+  updateParent() {
+    setState(() {});
+  }
+
+  // Stream<List<dynamic>> getAllProductsFromCartStream(
+  //     {required int idUser}) async* {
+  //   Uri url = Uri.parse(
+  //       "http://bagassatria-ecommerce.orgfree.com/Products.php?getAllProductsFromCart=1&id-user=$idUser");
+  //   var response = await http.get(url);
+  //   if (response.statusCode == 200) {
+  //     products = jsonDecode(response.body) as List<dynamic>;
+  //   }
+  //   yield products;
+  // }
 
   Stream<int> getTotalPriceProducts({required int idUser}) async* {
     while (true) {
@@ -54,12 +70,14 @@ class _CartListState extends State<CartList> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    // _streamController.stream.listen((event) => print(event));
   }
 
   @override
   void dispose() {
-    _textEditingController.dispose();
     super.dispose();
+    _textEditingController.dispose();
+    _streamController.close();
   }
 
   @override
@@ -121,8 +139,10 @@ class _CartListState extends State<CartList> {
           child: Column(
             children: [
               Expanded(
-                child: FutureBuilder(
-                  future: getAllProductsFromCart(idUser: user.idUser),
+                child: StreamBuilder(
+                  // future: getAllProductsFromCart(idUser: user.idUser),
+                  stream: Stream.fromFuture(
+                      getAllProductsFromCart(idUser: user.idUser)),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return SpinKitCircle(
@@ -187,25 +207,30 @@ class _CartListState extends State<CartList> {
                           },
                           child: Stack(
                             children: [
-                              ListView.builder(
-                                itemCount: products.length,
-                                itemBuilder: (context, index) {
-                                  Product cartProduct =
-                                      Product.fromJson(json: products[index]);
-                                  // totalPrice.then((value) => print(value));
-                                  return CardViewProduct(
-                                    idCart:
-                                        int.parse(products[index]["id_cart"]),
-                                    user: user,
-                                    product: cartProduct,
-                                    itemQuantity: int.parse(
-                                      products[index]["item_quantity"],
-                                    ),
-                                  );
-                                },
+                              Container(
+                                height:
+                                    MediaQuery.of(context).size.height - 100,
+                                child: ListView.builder(
+                                  itemCount: products.length,
+                                  itemBuilder: (context, index) {
+                                    Product cartProduct =
+                                        Product.fromJson(json: products[index]);
+                                    // totalPrice.then((value) => print(value));
+                                    return CardViewProduct(
+                                      updateParent: updateParent,
+                                      idCart:
+                                          int.parse(products[index]["id_cart"]),
+                                      user: user,
+                                      product: cartProduct,
+                                      itemQuantity: int.parse(
+                                        products[index]["item_quantity"],
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                               Positioned(
-                                left: -15,
+                                // left: -45,
                                 top: MediaQuery.of(context).size.height - 105,
                                 child: Container(
                                   width: MediaQuery.of(context).size.width,
@@ -314,23 +339,30 @@ class CardViewProduct extends StatefulWidget {
   final Product product;
   final int itemQuantity;
   final int idCart;
+  final updateParent;
   const CardViewProduct({
     Key? key,
     required this.user,
     required this.product,
     required this.itemQuantity,
     required this.idCart,
+    required this.updateParent,
   }) : super(key: key);
 
   @override
   _CardViewProductState createState() => _CardViewProductState(
-      user: user, product: product, itemQuantity: itemQuantity, idCart: idCart);
+      user: user,
+      product: product,
+      itemQuantity: itemQuantity,
+      idCart: idCart,
+      updateParent: updateParent);
 }
 
 class _CardViewProductState extends State<CardViewProduct> {
   final User user;
   final Product product;
   final int idCart;
+  final updateParent;
   int itemQuantity;
   TextEditingController _quantityTextInputController = TextEditingController();
   _CardViewProductState({
@@ -338,6 +370,7 @@ class _CardViewProductState extends State<CardViewProduct> {
     required this.product,
     required this.itemQuantity,
     required this.idCart,
+    required this.updateParent,
   });
 
   @override
@@ -482,6 +515,7 @@ class _CardViewProductState extends State<CardViewProduct> {
                                       }
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(snackBar);
+                                      updateParent();
                                       setState(() {});
                                     } else {
                                       var isRemoveFromWishlistSuccess =
@@ -547,28 +581,85 @@ class _CardViewProductState extends State<CardViewProduct> {
                                 TextButton.icon(
                                   onPressed: () async {
                                     if (itemQuantity < 2) {
+                                      var alertDialog = AlertDialog(
+                                        title: Text(
+                                            "Apakah anda mau menghapus ${product.nameProduct}"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () async {
+                                              var isProductRemoveFromCartSuccess =
+                                                  await product
+                                                      .removeProductFromCart(
+                                                          user: user,
+                                                          idCart: idCart);
+                                              if (isProductRemoveFromCartSuccess) {
+                                                print(true);
+                                              } else {
+                                                print(false);
+                                              }
+                                              Navigator.pop(context);
+                                              updateParent();
+                                              setState(() {});
+                                            },
+                                            child: Text("Yes"),
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStateProperty.all(
+                                                      ColorTheme.thirdColor),
+                                              shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  side: BorderSide(
+                                                      color:
+                                                          ColorTheme.thirdColor,
+                                                      width: 2),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("No"),
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      ColorTheme.fifthColor),
+                                              foregroundColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                      showDialog(
+                                          context: context,
+                                          builder: (_) => alertDialog);
+
                                       return null;
                                     }
                                     itemQuantity--;
-                                    var snackBar;
+                                    // var snackBar;
                                     bool isItemQuantitySet =
                                         await setItemQuantity(
                                             idUser: user.idUser,
                                             idCart: idCart,
                                             value: itemQuantity);
-                                    if (isItemQuantitySet) {
-                                      snackBar = SnackBar(
-                                          duration: Duration(seconds: 2),
-                                          content: Text(
-                                              "Jumlah item berhasil dikurangi"));
-                                    } else {
-                                      snackBar = SnackBar(
-                                          duration: Duration(seconds: 2),
-                                          content: Text(
-                                              "Jumlah item gagal dikurangi"));
-                                    }
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                    // if (isItemQuantitySet) {
+                                    //   snackBar = SnackBar(
+                                    //       duration: Duration(seconds: 2),
+                                    //       content: Text(
+                                    //           "Jumlah item berhasil dikurangi"));
+                                    // } else {
+                                    //   snackBar = SnackBar(
+                                    //       duration: Duration(seconds: 2),
+                                    //       content: Text(
+                                    //           "Jumlah item gagal dikurangi"));
+                                    // }
+                                    // ScaffoldMessenger.of(context)
+                                    //     .showSnackBar(snackBar);
                                     setState(() {});
                                   },
                                   icon: Icon(FontAwesome.left_circled),
@@ -608,25 +699,25 @@ class _CardViewProductState extends State<CardViewProduct> {
                                 TextButton.icon(
                                   onPressed: () async {
                                     itemQuantity++;
-                                    var snackBar;
+                                    // var snackBar;
                                     bool isItemQuantitySet =
                                         await setItemQuantity(
                                             idUser: user.idUser,
                                             idCart: idCart,
                                             value: itemQuantity);
-                                    if (isItemQuantitySet) {
-                                      snackBar = SnackBar(
-                                          duration: Duration(seconds: 2),
-                                          content: Text(
-                                              "Jumlah item berhasil ditambah"));
-                                    } else {
-                                      snackBar = SnackBar(
-                                          duration: Duration(seconds: 2),
-                                          content: Text(
-                                              "Jumlah item gagal ditambah"));
-                                    }
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                    // if (isItemQuantitySet) {
+                                    //   snackBar = SnackBar(
+                                    //       duration: Duration(seconds: 2),
+                                    //       content: Text(
+                                    //           "Jumlah item berhasil ditambah"));
+                                    // } else {
+                                    //   snackBar = SnackBar(
+                                    //       duration: Duration(seconds: 2),
+                                    //       content: Text(
+                                    //           "Jumlah item gagal ditambah"));
+                                    // }
+                                    // ScaffoldMessenger.of(context)
+                                    //     .showSnackBar(snackBar);
 
                                     setState(() {});
                                   },

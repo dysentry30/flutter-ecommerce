@@ -621,7 +621,7 @@ class _AddToCartButtonState extends State<AddToCartButton> {
               } else {
                 final int idCart = int.parse(isProductExistInCart.toString());
                 var isRemoveProductFromCartSuccess = await product
-                    .removeProductToCart(user: user, idCart: idCart);
+                    .removeProductFromCart(user: user, idCart: idCart);
                 if (isRemoveProductFromCartSuccess) {
                   snackBar = SnackBar(
                     duration: Duration(seconds: 2),
