@@ -39,21 +39,21 @@ class _CartListState extends State<CartList> {
   }
 
   Stream<int> getTotalPriceProducts({required int idUser}) async* {
-    int totalPrice = 0;
-    List<dynamic> products = await getAllProductsFromCart(idUser: idUser);
-    products.forEach((product) {
-      totalPrice +=
-          int.parse(product["price"]) * int.parse(product["item_quantity"]);
-    });
-    yield totalPrice;
+    while (true) {
+      int totalPrice = 0;
+      List<dynamic> products = await getAllProductsFromCart(idUser: idUser);
+      products.forEach((product) {
+        totalPrice +=
+            int.parse(product["price"]) * int.parse(product["item_quantity"]);
+      });
+      yield totalPrice;
+    }
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    // totalPrice = getTotalPriceProducts(products: products);
   }
 
   @override
