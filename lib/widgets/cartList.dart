@@ -91,14 +91,6 @@ class _CartListState extends State<CartList> {
                   ),
                   label: Text(""),
                 ),
-                TextButton.icon(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.local_grocery_store,
-                    color: Colors.white,
-                  ),
-                  label: Text(""),
-                ),
                 GestureDetector(
                   child: this.user == null
                       ? GestureDetector(

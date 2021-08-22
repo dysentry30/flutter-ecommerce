@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ecommerce_apps/ColorTheme.dart';
 import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:ecommerce_apps/classes/User.dart';
+import 'package:ecommerce_apps/widgets/cartList.dart';
 import 'package:ecommerce_apps/widgets/home.dart';
 import 'package:ecommerce_apps/widgets/productDetails.dart';
 import 'package:flutter/material.dart';
@@ -81,16 +82,13 @@ class _WishListState extends State<WishList> {
                       children: [
                         TextButton.icon(
                           onPressed: () {
-                            Navigator.popAndPushNamed(context, "/wishlist");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CartList(user: user),
+                              ),
+                            );
                           },
-                          icon: Icon(
-                            Icons.favorite,
-                            color: Colors.white,
-                          ),
-                          label: Text(""),
-                        ),
-                        TextButton.icon(
-                          onPressed: () {},
                           icon: Icon(
                             Icons.local_grocery_store,
                             color: Colors.white,
