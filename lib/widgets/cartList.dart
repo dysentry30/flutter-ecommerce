@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:ecommerce_apps/ColorTheme.dart';
 import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:ecommerce_apps/classes/User.dart';
+import 'package:ecommerce_apps/widgets/productDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
@@ -373,7 +374,14 @@ class _CardViewProductState extends State<CardViewProduct> {
     return Container(
       margin: EdgeInsets.only(bottom: 20),
       child: ListTile(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetails(product: product),
+            ),
+          );
+        },
         title: LayoutBuilder(
           builder: (context, constraints) => Container(
             constraints: constraints,

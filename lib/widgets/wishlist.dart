@@ -209,7 +209,17 @@ class _WishListState extends State<WishList> {
                                       return Container(
                                         margin: EdgeInsets.only(bottom: 20),
                                         child: ListTile(
-                                          onTap: () {},
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ProductDetails(
+                                                  product: wishlistProduct,
+                                                ),
+                                              ),
+                                            );
+                                          },
                                           title: LayoutBuilder(
                                             builder: (context, constraints) =>
                                                 Container(
