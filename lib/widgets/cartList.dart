@@ -393,6 +393,7 @@ class _CardViewProductState extends State<CardViewProduct> {
   @override
   Widget build(BuildContext context) {
     bool isProductExistInWishlist;
+    bool isRemovingItem = false;
     _quantityTextInputController.text = itemQuantity.toString();
     int price = product.price * itemQuantity;
 
@@ -581,63 +582,71 @@ class _CardViewProductState extends State<CardViewProduct> {
                                 TextButton.icon(
                                   onPressed: () async {
                                     if (itemQuantity < 2) {
-                                      var alertDialog = AlertDialog(
-                                        title: Text(
-                                            "Apakah anda mau menghapus ${product.nameProduct}"),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () async {
-                                              var isProductRemoveFromCartSuccess =
-                                                  await product
-                                                      .removeProductFromCart(
-                                                          user: user,
-                                                          idCart: idCart);
-                                              if (isProductRemoveFromCartSuccess) {
-                                                print(true);
-                                              } else {
-                                                print(false);
-                                              }
-                                              Navigator.pop(context);
-                                              updateParent();
-                                              setState(() {});
-                                            },
-                                            child: Text("Yes"),
-                                            style: ButtonStyle(
-                                              foregroundColor:
-                                                  MaterialStateProperty.all(
-                                                      ColorTheme.thirdColor),
-                                              shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(5),
-                                                  side: BorderSide(
-                                                      color:
-                                                          ColorTheme.thirdColor,
-                                                      width: 2),
+                                      var alertDialog = StatefulBuilder(
+                                          builder: (context, setState) {
+                                        return AlertDialog(
+                                          title: Text(
+                                              "Apakah anda mau menghapus ${product.nameProduct}"),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () async {
+                                                isRemovingItem = true;
+                                                setState(() {});
+                                                await product
+                                                    .removeProductFromCart(
+                                                        user: user,
+                                                        idCart: idCart);
+                                                isRemovingItem = false;
+                                                setState(() {});
+                                                Navigator.pop(context);
+                                                updateParent();
+                                              },
+                                              child: isRemovingItem
+                                                  ? Container(
+                                                      width: 50,
+                                                      child: SpinKitCircle(
+                                                          size: 20,
+                                                          color: Colors.white),
+                                                    )
+                                                  : Text("Yes"),
+                                              style: ButtonStyle(
+                                                foregroundColor:
+                                                    MaterialStateProperty.all(
+                                                        ColorTheme.thirdColor),
+                                                shape:
+                                                    MaterialStateProperty.all(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                    side: BorderSide(
+                                                        color: ColorTheme
+                                                            .thirdColor,
+                                                        width: 2),
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text("No"),
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      ColorTheme.fifthColor),
-                                              foregroundColor:
-                                                  MaterialStateProperty.all(
-                                                      Colors.white),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text("No"),
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateProperty.all(
+                                                        ColorTheme.fifthColor),
+                                                foregroundColor:
+                                                    MaterialStateProperty.all(
+                                                        Colors.white),
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      );
+                                          ],
+                                        );
+                                      });
                                       showDialog(
                                           context: context,
                                           builder: (_) => alertDialog);
-
                                       return null;
                                     }
                                     itemQuantity--;
