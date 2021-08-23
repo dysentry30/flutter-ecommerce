@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:ecommerce_apps/ColorTheme.dart';
 import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:ecommerce_apps/classes/User.dart';
+import 'package:ecommerce_apps/constanta.dart';
 import 'package:ecommerce_apps/widgets/productDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -30,7 +31,7 @@ class _CartListState extends State<CartList> {
 
   Future<List<dynamic>> getAllProductsFromCart({required int idUser}) async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?getAllProductsFromCart=1&id-user=$idUser");
+        "$baseURL/Products.php?getAllProductsFromCart=1&id-user=$idUser");
     var response = await http.get(url);
     if (response.statusCode == 200) {
       products = jsonDecode(response.body) as List<dynamic>;
@@ -46,7 +47,7 @@ class _CartListState extends State<CartList> {
   // Stream<List<dynamic>> getAllProductsFromCartStream(
   //     {required int idUser}) async* {
   //   Uri url = Uri.parse(
-  //       "http://bagassatria-ecommerce.orgfree.com/Products.php?getAllProductsFromCart=1&id-user=$idUser");
+  //       "$baseURL/Products.php?getAllProductsFromCart=1&id-user=$idUser");
   //   var response = await http.get(url);
   //   if (response.statusCode == 200) {
   //     products = jsonDecode(response.body) as List<dynamic>;
@@ -382,7 +383,7 @@ class _CardViewProductState extends State<CardViewProduct> {
   Future<bool> setItemQuantity(
       {required int idUser, required int idCart, required int value}) async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?setItemQuantityInCart=1&id-user=$idUser&id-cart=$idCart&item-quantity=$value");
+        "$baseURL/Products.php?setItemQuantityInCart=1&id-user=$idUser&id-cart=$idCart&item-quantity=$value");
     var response = await http.get(url);
     if (response.statusCode == 200 && response.body == "true") {
       return true;

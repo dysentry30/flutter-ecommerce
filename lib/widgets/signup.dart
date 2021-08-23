@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ecommerce_apps/ColorTheme.dart';
 import 'package:ecommerce_apps/classes/User.dart';
+import 'package:ecommerce_apps/constanta.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -436,7 +437,7 @@ class _SignUpState extends State<SignUp> {
                               // Uri url = Uri.parse(
                               //     "http://192.168.100.100/e-commerce-flutter-app/User.php?login=1&username=${username}&password=${password}");
                               Uri url = Uri.parse(
-                                  "http://bagassatria-ecommerce.orgfree.com/User.php?signUp=1&newUser=$newUser");
+                                  "$baseURL/User.php?signUp=1&newUser=$newUser");
                               var response = await http.get(url);
                               if (response.statusCode == 200) {
                                 if (response.body != "false") {

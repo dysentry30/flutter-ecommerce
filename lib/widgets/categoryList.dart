@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ecommerce_apps/ColorTheme.dart';
 import 'package:ecommerce_apps/classes/Product.dart';
+import 'package:ecommerce_apps/constanta.dart';
 import 'package:ecommerce_apps/widgets/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -21,7 +22,7 @@ class _CategoryListState extends State<CategoryList> {
   dynamic user;
   Future<List<dynamic>> getAllProductsByCategory() async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?getAllProductsByCategory=1&category=${this.widget.category}");
+        "$baseURL/Products.php?getAllProductsByCategory=1&category=${this.widget.category}");
     final response = await http.get(url);
     final dataProducts = jsonDecode(response.body) as List<dynamic>;
     return dataProducts;

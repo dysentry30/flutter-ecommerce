@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:ecommerce_apps/ColorTheme.dart';
 import 'package:ecommerce_apps/classes/User.dart';
+import 'package:ecommerce_apps/constanta.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -200,7 +201,7 @@ class _LoginState extends State<Login> {
                               String username = this.username!;
                               String password = this.password!;
                               Uri url = Uri.parse(
-                                  "http://bagassatria-ecommerce.orgfree.com/User.php?login=1&username=${username}&password=${password}");
+                                  "$baseURL/User.php?login=1&username=${username}&password=${password}");
                               // Uri url = Uri.parse(
                               //     "http://192.168.100.100/e-commerce-flutter-app/User.php?login=1&username=vupton&password=c0305c6fef6466e56e6d140d87da8a76");
                               var response = await http.get(url);

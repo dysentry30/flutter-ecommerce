@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:ecommerce_apps/classes/User.dart';
+import 'package:ecommerce_apps/constanta.dart';
 import 'package:http/http.dart' as http;
 
 class Product {
@@ -33,7 +34,7 @@ class Product {
 
   // factory Product.getAll() {
   //   Uri url = Uri.parse(
-  //       "http://bagassatria-ecommerce.orgfree.com/Products.php?getAllProducts=1");
+  //       "$baseURL/Products.php?getAllProducts=1");
   //   var response = http.get(url);
   //   response.then((value) {
   //     print(value);
@@ -53,7 +54,7 @@ class Product {
 
   Future<bool> isProductWishlisted(int idUser) async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?isProductWishlisted=1&id-product=${this.id}&id-user=$idUser");
+        "$baseURL/Products.php?isProductWishlisted=1&id-product=${this.id}&id-user=$idUser");
     var response = await http.get(url);
     if (response.body == "true") {
       return true;
@@ -63,7 +64,7 @@ class Product {
 
   Future<bool> addProductToWishlist({required User user}) async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?addProductToWishlist=1&product=${this.toString()}&id-user=${user.idUser}");
+        "$baseURL/Products.php?addProductToWishlist=1&product=${this.toString()}&id-user=${user.idUser}");
     var result = await http.get(url);
     if (result.body == "true") {
       return true;
@@ -73,7 +74,7 @@ class Product {
 
   Future<bool> removeProductFromWishlist({required User user}) async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/User.php?removeProductFromWishlist=1&id-product=${this.id}&id-user=${user.idUser}");
+        "$baseURL/User.php?removeProductFromWishlist=1&id-product=${this.id}&id-user=${user.idUser}");
     var result = await http.get(url);
     if (result.body == "true") {
       return true;
@@ -83,7 +84,7 @@ class Product {
 
   Future<bool> addProductToCart({required User user}) async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?addProductToCart=1&id-user=${user.idUser}&id-product=${this.id}");
+        "$baseURL/Products.php?addProductToCart=1&id-user=${user.idUser}&id-product=${this.id}");
     var result = await http.get(url);
     if (result.body == "true") {
       return true;
@@ -94,7 +95,7 @@ class Product {
   Future<bool> removeProductFromCart(
       {required User user, required int idCart}) async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?removeProductFromCart=1&id-user=${user.idUser}&id-cart=${idCart}");
+        "$baseURL/Products.php?removeProductFromCart=1&id-user=${user.idUser}&id-cart=${idCart}");
     var result = await http.get(url);
     if (result.body == "true") {
       return true;
@@ -104,7 +105,7 @@ class Product {
 
   Future<dynamic> isProductExistInCart({required int idUser}) async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?isProductExistInCart=1&id-user=$idUser&id-product=${this.id}");
+        "$baseURL/Products.php?isProductExistInCart=1&id-user=$idUser&id-product=${this.id}");
     var response = await http.get(url);
     if (response.statusCode == 200 && response.body != "false") {
       return response.body;

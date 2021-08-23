@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:ecommerce_apps/classes/User.dart';
+import 'package:ecommerce_apps/constanta.dart';
 import 'package:ecommerce_apps/widgets/cartList.dart';
 import 'package:ecommerce_apps/widgets/categoryList.dart';
 import 'package:ecommerce_apps/widgets/productDetails.dart';
@@ -277,7 +278,7 @@ class _ProductCardState extends State<ProductCard>
 
   Future<List<dynamic>> readJsonProducts() async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?getAllProductsByCategory=1&category=${this.widget.category}");
+        "$baseURL/Products.php?getAllProductsByCategory=1&category=${this.widget.category}");
     final response = await http.get(url);
     final dataProducts = jsonDecode(response.body) as List<dynamic>;
     return dataProducts;

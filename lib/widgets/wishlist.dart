@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ecommerce_apps/ColorTheme.dart';
 import 'package:ecommerce_apps/classes/Product.dart';
 import 'package:ecommerce_apps/classes/User.dart';
+import 'package:ecommerce_apps/constanta.dart';
 import 'package:ecommerce_apps/widgets/cartList.dart';
 import 'package:ecommerce_apps/widgets/home.dart';
 import 'package:ecommerce_apps/widgets/productDetails.dart';
@@ -24,7 +25,7 @@ class _WishListState extends State<WishList> {
 
   Future<List<dynamic>> getAllWishListProducts(int idUser) async {
     Uri url = Uri.parse(
-        "http://bagassatria-ecommerce.orgfree.com/Products.php?getAllWishlistProducts=1&id-user=$idUser");
+        "$baseURL/Products.php?getAllWishlistProducts=1&id-user=$idUser");
     var response = await http.get(url);
     List<dynamic> allProducts = jsonDecode(response.body) as List<dynamic>;
     return allProducts;
